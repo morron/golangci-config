@@ -1,0 +1,97 @@
+run:
+  timeout: 5m
+  skip-dirs:
+    - /gen/
+    - /bin/
+    - /example/
+  tests: false
+linters:
+  enable-all: true
+  disable:
+    - exhaustivestruct
+    - exhaustruct
+    - maligned
+    - tagliatelle
+    - ireturn
+    - contextcheck
+    - godox
+    - nosnakecase
+    - interfacebloat
+  fast: false
+linters-settings:
+  gocritic:
+    disabled-checks:
+      - unnamedResult
+    enabled-tags:
+      - style
+      - experimental
+      - performance
+      - diagnostic
+      - opinionated
+    settings:
+      hugeParam:
+        sizeThreshold: 1024
+
+  govet:
+    enable-all: true
+    disable:
+      - shadow
+      - fieldalignment
+
+  gci:
+    sections:
+      - standard
+      - default
+
+  gomoddirectives:
+    replace-allow-list:
+      - github.com/apache/thrift
+
+  funlen:
+    lines: 80
+
+  gomodguard: # расширить список
+    blocked:
+      modules:
+        - github.com/urfave/cli:
+            recommendations:
+              - github.com/urfave/cli/v2
+        - github.com/go-mgo/mgo/bson:
+            recommendations:
+              - go.mongodb.org/mongo-driver/bson
+
+  varnamelen:
+    # The longest distance, in source lines, that is being considered a "small scope." (defaults to 5)
+    # Variables used in at most this many lines will be ignored.
+    max-distance: 12
+    # Ignore "ok" variables that hold the bool return value of a type assertion. (defaults to false)
+    ignore-type-assert-ok: true
+    # Ignore "ok" variables that hold the bool return value of a map index. (defaults to false)
+    ignore-map-index-ok: true
+    # Ignore "ok" variables that hold the bool return value of a channel receive. (defaults to false)
+    ignore-chan-recv-ok: true
+    # Optional list of variable names that should be ignored completely. (defaults to empty list)
+    ignore-names:
+      - ch
+      - db
+      - id
+      - ok
+      - ts
+      - tx
+      - r
+      - w
+      - mc
+    # Optional list of variable declarations that should be ignored completely. (defaults to empty list)
+    # Entries must be in the form of "<variable name> <type>" or "<variable name> *<type>" for
+    # variables, or "const <name>" for constants.
+    ignore-decls:
+      - w http.ResponseWriter
+      - r *http.Request
+      - t testing.T
+
+issues:
+  exclude-rules:
+    - path: 'pkg/test/factories'
+      linters:
+        - gomnd # factories are supposed to have magic numbers
+        - funlen # long functions in factories are fine
